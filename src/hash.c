@@ -47,14 +47,19 @@ size_t hash_cantidad(hash_t *hash)
 	return hash->cantidad;
 }
 
-// FIXME: Esta funcion esta mal, muchas colision (ver de usar djb2 o quizas acumular los valores ascii de la clave y despues dividirlo)
 int funcion_hash(char *clave, size_t capacidad)
 {
 	if (clave == NULL)
 		return ERROR;
 
-	size_t largo = strlen(clave);
-	return largo % capacidad;
+	unsigned long hash = 5381;
+    int c;
+
+    while ((c = *clave++)) {
+        hash = ((hash << 5) + hash) + (unsigned long) c;
+    }
+
+	return (int)(hash % capacidad);
 }
 
 void rehash(hash_t *hash)
@@ -67,7 +72,7 @@ void rehash(hash_t *hash)
 		return;
 	hash = aux;
 	hash->capacidad = 2 * hash->capacidad;
-	hash->factor_carga = (float) hash->cantidad / hash->capacidad;
+	hash->factor_carga = (float)(hash->cantidad / hash->capacidad);
 }
 
 char *copiar_clave(char *clave)
@@ -84,7 +89,7 @@ nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 			void **encontrado, bool *insertado, bool *reemplazado)
 {
 	if (nodo == NULL) {
-		nodo = malloc(sizeof(nodo_t));
+		nodo = calloc(1, sizeof(nodo_t));
 		if (nodo == NULL)
 			return NULL;
 
@@ -92,8 +97,9 @@ nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 		nodo->par.clave = copiar_clave(clave);
 		*insertado = true;
 		return nodo;
-	} else if (strcmp(nodo->par.clave, clave) == 0 && *encontrado != NULL) {
-		*encontrado = nodo->par.valor;
+	} else if (strcmp(nodo->par.clave, clave) == 0) {
+		if (*encontrado != NULL)
+			*encontrado = nodo->par.valor;
 		nodo->par.valor = valor;
 		*reemplazado = true;
 		return nodo;
@@ -101,7 +107,6 @@ nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 
 	return hash_insertar_recursivo(nodo->siguiente, clave, valor, encontrado, insertado, reemplazado);
 }
-
 
 bool hash_insertar(hash_t *hash, char *clave, void *valor, void **encontrado)
 {
@@ -114,27 +119,87 @@ bool hash_insertar(hash_t *hash, char *clave, void *valor, void **encontrado)
 	int clave_hasheada = funcion_hash(clave, hash->capacidad);
 	if (clave_hasheada == ERROR)
 		return false;
-	if (clave_hasheada > hash->capacidad)
-		clave_hasheada = hash->capacidad - 1;
 
 	bool insertado = false, reemplazado = false;
 	hash->tabla[clave_hasheada] = hash_insertar_recursivo(hash->tabla[clave_hasheada], clave, valor, encontrado, &insertado, &reemplazado);
 	if (insertado == true) {
 		hash->cantidad++;
-		hash->factor_carga = (float)hash->cantidad / hash->capacidad;
+		hash->factor_carga = (float)(hash->cantidad / hash->capacidad);
 	}
 
 	return insertado || reemplazado;
 }
 
-void *hash_buscar(hash_t *hash, char *clave);
+nodo_t *hash_buscar_recursivo(nodo_t *nodo, char *clave, void *aux, bool eliminar)
+{
+	if (nodo == NULL)
+		return NULL;
+
+	if (strcmp(nodo->par.clave, clave) == 0) {
+		aux = nodo->par.valor;
+		if (eliminar == true) {
+			free(nodo->par.valor);
+			free(nodo);
+			return NULL;
+		} else
+			return nodo;
+	}
+
+	nodo->siguiente = hash_buscar_recursivo(nodo->siguiente, clave, aux, eliminar);
+
+	return nodo;
+}
+
+void *hash_buscar(hash_t *hash, char *clave)
+{
+	int clave_hasheada = funcion_hash(clave, hash->capacidad);
+	if (clave_hasheada == ERROR)
+		return NULL;
+
+	void *resultado = NULL;
+	hash_buscar_recursivo(hash->tabla[clave_hasheada], clave, resultado, false);
+
+	return resultado;
+}
 
 bool hash_contiene(hash_t *hash, char *clave);
 
-void *hash_quitar(hash_t *hash, char *clave);
+void *hash_quitar(hash_t *hash, char *clave)
+{
+	int clave_hasheada = funcion_hash(clave, hash->capacidad);
+	if (clave_hasheada == ERROR)
+		return NULL;
+
+	void *resultado = NULL;
+	hash_buscar_recursivo(hash->tabla[clave_hasheada], clave, resultado, true);
+
+	return resultado;
+}
 
 size_t hash_iterar(hash_t *hash, bool (*f)(char *, void *, void *), void *ctx);
 
-void hash_destruir(hash_t *hash);
+void eliminar_recursivo(nodo_t *nodo, void (*destructor)(void *))
+{
+	if (nodo == NULL)
+		return;
 
-void hash_destruir_todo(hash_t *hash, void (*destructor)(void *));
+	eliminar_recursivo(nodo->siguiente, destructor);
+
+	if (destructor != NULL)
+		destructor(nodo->par.valor);
+
+	if (nodo != NULL)
+		free(nodo);
+}
+
+void hash_destruir(hash_t *hash)
+{
+	for (size_t i = 0; i < hash->capacidad; i++)
+		eliminar_recursivo(hash->tabla[i], NULL);
+}
+
+void hash_destruir_todo(hash_t *hash, void (*destructor)(void *))
+{
+	for (size_t i = 0; i < hash->capacidad; i++)
+		eliminar_recursivo(hash->tabla[i], destructor);
+}
