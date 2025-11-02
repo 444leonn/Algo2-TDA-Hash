@@ -50,9 +50,14 @@ void hash_cantidad_devuelve_0_para_hash_vacio()
 void hash_cantidad_devuelve_cantidad_correcta()
 {
 	hash_t *hash = hash_crear(CAPACIDAD_INICIAL);
-	hash_insertar(hash, CLAVE_1, (void*)VALOR_1, NULL);
-	hash_insertar(hash, CLAVE_2, (void*)VALOR_2, NULL);
-	hash_insertar(hash, CLAVE_3, (void*)VALOR_3, NULL);
+
+	char *p_VALOR_1 = VALOR_1;
+	char *p_VALOR_2 = VALOR_2;
+	char *p_VALOR_3 = VALOR_3;
+
+	hash_insertar(hash, CLAVE_1, p_VALOR_1, NULL);
+	hash_insertar(hash, CLAVE_2, p_VALOR_2, NULL);
+	hash_insertar(hash, CLAVE_3, p_VALOR_3, NULL);
 
 	size_t cantidad = hash_cantidad(hash);
 	pa2m_afirmar(
@@ -67,19 +72,27 @@ void hash_cantidad_devuelve_cantidad_correcta()
 void hash_cantidad_devuelve_cantidad_correcta_luego_de_insertar_y_eliminar()
 {
 	hash_t *hash = hash_crear(CAPACIDAD_INICIAL);
-	hash_insertar(hash, CLAVE_1, (void*)VALOR_1, NULL);
-	hash_insertar(hash, CLAVE_2, (void*)VALOR_2, NULL);
-	hash_insertar(hash, CLAVE_3, (void*)VALOR_3, NULL);
-	hash_insertar(hash, CLAVE_4, (void*)VALOR_4, NULL);
-	hash_insertar(hash, CLAVE_5, (void*)VALOR_5, NULL);
-	hash_insertar(hash, CLAVE_6, (void*)VALOR_6, NULL);
+
+	char *p_VALOR_1 = VALOR_1;
+	char *p_VALOR_2 = VALOR_2;
+	char *p_VALOR_3 = VALOR_3;
+	char *p_VALOR_4 = VALOR_4;
+	char *p_VALOR_5 = VALOR_5;
+	char *p_VALOR_6 = VALOR_6;
+
+	hash_insertar(hash, CLAVE_1, p_VALOR_1, NULL);
+	hash_insertar(hash, CLAVE_2, p_VALOR_2, NULL);
+	hash_insertar(hash, CLAVE_3, p_VALOR_3, NULL);
+	hash_insertar(hash, CLAVE_4, p_VALOR_4, NULL);
+	hash_insertar(hash, CLAVE_5, p_VALOR_5, NULL);
+	hash_insertar(hash, CLAVE_6, p_VALOR_6, NULL);
 	hash_quitar(hash, CLAVE_1);
 	hash_quitar(hash, CLAVE_4);
 
 	size_t cantidad = hash_cantidad(hash);
 	pa2m_afirmar(
 		cantidad == 4,
-		"Hash Cantidad devuelve la cantidad correcta. (devolvio: %d)",
+		"Hash Cantidad devuelve la cantidad correcta, luego de eliminar elementos. (devolvio: %d)",
 		cantidad);
 
 	if (hash != NULL)
@@ -89,7 +102,9 @@ void hash_cantidad_devuelve_cantidad_correcta_luego_de_insertar_y_eliminar()
 
 void hash_insertar_devuelve_false_para_hash_invalido()
 {
-	bool resultado = hash_insertar(NULL, CLAVE_1, (void *)VALOR_1, NULL);
+	char *p_VALOR_1 = VALOR_1;
+
+	bool resultado = hash_insertar(NULL, CLAVE_1, p_VALOR_1, NULL);
 
 	pa2m_afirmar(resultado == false, "Insertar en un Hash inválido, no lo inserta y devuelve false.");
 }
@@ -110,17 +125,22 @@ void hash_insertar_devuelve_false_para_clave_invalida()
 void hash_insertar_devuelve_true_si_logra_insertar()
 {
 	hash_t *hash = hash_crear(CAPACIDAD_INICIAL);
+	char *p_VALOR_1 = VALOR_1;
 
-	bool resultado = hash_insertar(hash, CLAVE_1, (void *)VALOR_1, NULL);
+	bool resultado = hash_insertar(hash, CLAVE_1, p_VALOR_1, NULL);
 	pa2m_afirmar(resultado == true, "Insertar en un Hash válido, inserta el valor y devuelve true.");
 }
 
 void hash_insertar_devuelve_true_si_logra_insertar_y_almacena_referencia_del_valor_reemplazado()
 {
 	hash_t *hash = hash_crear(CAPACIDAD_INICIAL);
-	hash_insertar(hash, CLAVE_7, (void*)VALOR_7, NULL);
+
+	char *p_VALOR_7 = VALOR_7;
+	char *p_VALOR_8 = VALOR_8;
+
+	hash_insertar(hash, CLAVE_7, p_VALOR_7, NULL);
 	void *reemplazado;
-	hash_insertar(hash, CLAVE_7, (void*)VALOR_8, &reemplazado);
+	hash_insertar(hash, CLAVE_7, p_VALOR_8, &reemplazado);
 
 	bool almacenado = strcmp((char*)reemplazado, VALOR_7);
 
