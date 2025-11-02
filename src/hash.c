@@ -47,6 +47,7 @@ size_t hash_cantidad(hash_t *hash)
 	return hash->cantidad;
 }
 
+// FIXME: Esta funcion esta mal, muchas colision (ver de usar djb2 o quizas acumular los valores ascii de la clave y despues dividirlo)
 int funcion_hash(char *clave, size_t capacidad)
 {
 	if (clave == NULL)
@@ -69,6 +70,16 @@ void rehash(hash_t *hash)
 	hash->factor_carga = (float) hash->cantidad / hash->capacidad;
 }
 
+char *copiar_clave(char *clave)
+{
+	size_t largo = strlen(clave) + 1;
+	char *aux = malloc(largo * sizeof(char));
+	if (aux == NULL)
+		return NULL;
+
+	return strcpy(aux, clave);
+}
+
 nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 			void **encontrado, bool *insertado, bool *reemplazado)
 {
@@ -78,7 +89,7 @@ nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 			return NULL;
 
 		nodo->par.valor = valor;
-		strcpy(nodo->par.clave, clave);
+		nodo->par.clave = copiar_clave(clave);
 		*insertado = true;
 		return nodo;
 	} else if (strcmp(nodo->par.clave, clave) == 0 && *encontrado != NULL) {
@@ -88,7 +99,7 @@ nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 		return nodo;
 	}
 
-	hash_insertar_recursivo(nodo->siguiente, clave, valor, encontrado, insertado, reemplazado);
+	return hash_insertar_recursivo(nodo->siguiente, clave, valor, encontrado, insertado, reemplazado);
 }
 
 
