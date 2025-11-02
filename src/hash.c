@@ -1,6 +1,7 @@
 #include "hash.h"
 #include "constantes.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -21,6 +22,11 @@ struct hash {
 	size_t cantidad;
 	float factor_carga;
 };
+
+float calcular_factor_carga(size_t cantidad, size_t capacidad)
+{
+	return (float)(cantidad % capacidad);
+}
 
 hash_t *hash_crear(size_t capacidad_inicial)
 {
@@ -67,12 +73,37 @@ void rehash(hash_t *hash)
 	if (hash == NULL)
 		return;
 
-	hash_t *aux = realloc(hash, 2 * (hash->capacidad));
-	if (aux == NULL)
+	size_t capacidad_anterior = hash->capacidad;
+	nodo_t **tabla_anterior = hash->tabla;
+
+	hash->capacidad = 2 * capacidad_anterior;
+	hash->tabla = calloc(hash->capacidad, sizeof(nodo_t*));
+	if (hash->tabla == NULL) {
+		hash->tabla = tabla_anterior;
+		hash->capacidad = capacidad_anterior;
 		return;
-	hash = aux;
-	hash->capacidad = 2 * hash->capacidad;
-	hash->factor_carga = (float)(hash->cantidad / hash->capacidad);
+	}
+
+	hash->cantidad = 0;
+
+	for (size_t i = 0; i < capacidad_anterior; i++) {
+		nodo_t *actual = tabla_anterior[i];
+		while (actual != NULL) {
+			nodo_t *siguiente = actual->siguiente;
+
+			int nuevo_indice = funcion_hash(actual->par.clave, hash->capacidad);
+
+			actual->siguiente = hash->tabla[nuevo_indice];
+			hash->tabla[nuevo_indice] = actual;
+			hash->cantidad++;
+
+			actual = siguiente;
+		}
+	}
+
+	free(tabla_anterior);
+
+	hash->factor_carga = calcular_factor_carga(hash->cantidad, hash->capacidad);
 }
 
 char *copiar_clave(char *clave)
@@ -105,7 +136,9 @@ nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 		return nodo;
 	}
 
-	return hash_insertar_recursivo(nodo->siguiente, clave, valor, encontrado, insertado, reemplazado);
+	nodo->siguiente = hash_insertar_recursivo(nodo->siguiente, clave, valor, encontrado, insertado, reemplazado);
+
+	return nodo;
 }
 
 bool hash_insertar(hash_t *hash, char *clave, void *valor, void **encontrado)
@@ -124,23 +157,24 @@ bool hash_insertar(hash_t *hash, char *clave, void *valor, void **encontrado)
 	hash->tabla[clave_hasheada] = hash_insertar_recursivo(hash->tabla[clave_hasheada], clave, valor, encontrado, &insertado, &reemplazado);
 	if (insertado == true) {
 		hash->cantidad++;
-		hash->factor_carga = (float)(hash->cantidad / hash->capacidad);
+		hash->factor_carga = calcular_factor_carga(hash->cantidad, hash->capacidad);
 	}
 
 	return insertado || reemplazado;
 }
 
-nodo_t *hash_buscar_recursivo(nodo_t *nodo, char *clave, void *aux, bool eliminar)
+nodo_t *hash_buscar_recursivo(nodo_t *nodo, char *clave, void **aux, bool eliminar)
 {
 	if (nodo == NULL)
 		return NULL;
 
 	if (strcmp(nodo->par.clave, clave) == 0) {
-		aux = nodo->par.valor;
+		*aux = nodo->par.valor;
 		if (eliminar == true) {
-			free(nodo->par.valor);
+			nodo_t *siguiente = nodo->siguiente;
+			free(nodo->par.clave);
 			free(nodo);
-			return NULL;
+			return siguiente;
 		} else
 			return nodo;
 	}
@@ -157,7 +191,7 @@ void *hash_buscar(hash_t *hash, char *clave)
 		return NULL;
 
 	void *resultado = NULL;
-	hash_buscar_recursivo(hash->tabla[clave_hasheada], clave, resultado, false);
+	hash_buscar_recursivo(hash->tabla[clave_hasheada], clave, &resultado, false);
 
 	return resultado;
 }
@@ -171,7 +205,14 @@ void *hash_quitar(hash_t *hash, char *clave)
 		return NULL;
 
 	void *resultado = NULL;
-	hash_buscar_recursivo(hash->tabla[clave_hasheada], clave, resultado, true);
+	hash_buscar_recursivo(hash->tabla[clave_hasheada], clave, &resultado,
+			      true);
+
+	printf("\n\n%s\n\n", (char*)resultado);
+	if (resultado != NULL) {
+		hash->cantidad--;
+		hash->factor_carga = calcular_factor_carga(hash->cantidad, hash->capacidad);
+	}
 
 	return resultado;
 }
@@ -188,6 +229,7 @@ void eliminar_recursivo(nodo_t *nodo, void (*destructor)(void *))
 	if (destructor != NULL)
 		destructor(nodo->par.valor);
 
+	free(nodo->par.clave);
 	if (nodo != NULL)
 		free(nodo);
 }
