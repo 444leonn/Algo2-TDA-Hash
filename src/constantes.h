@@ -52,8 +52,6 @@
 
 #define CLAVE_7 "aceituna"
 #define VALOR_7 "negra"
-
-#define CLAVE_8 "aceituna"
 #define VALOR_8 "verde"
 
 #endif // CONSTANTES_H_
