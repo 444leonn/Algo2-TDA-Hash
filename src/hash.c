@@ -128,8 +128,10 @@ nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 		nodo->par.clave = copiar_clave(clave);
 		*insertado = true;
 		return nodo;
-	} else if (strcmp(nodo->par.clave, clave) == 0) {
-		if (*encontrado != NULL)
+	}
+
+	if (strcmp(nodo->par.clave, clave) == 0) {
+		if (encontrado != NULL)
 			*encontrado = nodo->par.valor;
 		nodo->par.valor = valor;
 		*reemplazado = true;
