@@ -37,6 +37,15 @@
 
 ##  Funcionamiento
 
+El programa funciona recibiendo por parámetro el nombre de un archivo el cual contiene datos de pokemones, se encarga de hacer las verificaciones necesarias.
+Luego se encarga de leerlo línea por línea, y parseando cada línea en una estructura de _pokemon_, cada pokemon es almacenado luego en una estructura `tp1_t`.
+A partir de esa estructura es que se utiliza la implementación del **TDA Hash**. En donde se crea una Tabla de Hash **(revisar esto)** dependiendo si la opción de búsqueda era por número de ID, o por Nombre de Pokemon, permitiendo diferenciar la manera en que se organizara la jerarquía de nuestro Diccionario en la Tabla de Hash.
+
+## Implementacion
+
+Para la implementacion decidi utilizar las siguientes estructuras:
+
+- 
 
 ---
 
