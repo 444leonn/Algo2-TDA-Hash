@@ -253,7 +253,7 @@ bool iterar_recursivo(nodo_t *nodo, bool (*f)(char *, void *, void *), void *ctx
 		return true;
 	bool resultado = true;
 
-	resultado = f(nodo->par.valor, ctx);
+	resultado = f(nodo->par.clave, nodo->par.valor, ctx);
 	*cantidad_aplicados += 1;
 	if (resultado == false)
 		return false;
