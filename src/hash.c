@@ -107,6 +107,9 @@ void rehash(hash_t *hash)
 
 char *copiar_clave(char *clave)
 {
+	if (clave == NULL)
+		return NULL;
+
 	size_t largo = strlen(clave) + 1;
 	char *aux = malloc(largo * sizeof(char));
 	if (aux == NULL)
@@ -179,15 +182,22 @@ void *hash_buscar_recursivo(nodo_t *nodo, char *clave, bool *contiene)
 
 void *hash_buscar(hash_t *hash, char *clave)
 {
+	if (hash == NULL || clave == NULL)
+		return NULL;
+
 	int clave_hasheada = funcion_hash(clave, hash->capacidad);
 	if (clave_hasheada == ERROR)
 		return NULL;
 
-	return hash_buscar_recursivo(hash->tabla[clave_hasheada], clave, false);
+	bool contiene = false;
+	return hash_buscar_recursivo(hash->tabla[clave_hasheada], clave, &contiene);
 }
 
 bool hash_contiene(hash_t *hash, char *clave)
 {
+	if (hash == NULL || clave == NULL)
+		return false;
+
 	int clave_hasheada = funcion_hash(clave, hash->capacidad);
 	if (clave_hasheada == ERROR)
 		return false;
@@ -218,6 +228,9 @@ nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux)
 
 void *hash_quitar(hash_t *hash, char *clave)
 {
+	if (hash == NULL || clave == NULL)
+		return NULL;
+
 	int clave_hasheada = funcion_hash(clave, hash->capacidad);
 	if (clave_hasheada == ERROR)
 		return NULL;
@@ -234,7 +247,34 @@ void *hash_quitar(hash_t *hash, char *clave)
 	return resultado;
 }
 
-size_t hash_iterar(hash_t *hash, bool (*f)(char *, void *, void *), void *ctx);
+bool iterar_recursivo(nodo_t *nodo, bool (*f)(char *, void *, void *), void *ctx, size_t *cantidad_aplicados)
+{
+	if (nodo == NULL)
+		return true;
+	bool resultado = true;
+
+	resultado = f(nodo->par.valor, ctx);
+	*cantidad_aplicados += 1;
+	if (resultado == false)
+		return false;
+
+	return iterar_recursivo(nodo->siguiente, f, ctx, cantidad_aplicados);
+}
+
+size_t hash_iterar(hash_t *hash, bool (*f)(char *, void *, void *), void *ctx)
+{
+	if (hash == NULL || f == NULL)
+		return 0;
+
+	bool resultado = true;
+	size_t i = 0, cant_aplicados = 0;
+	while (resultado == true && i < hash->capacidad) {
+		resultado = iterar_recursivo(hash->tabla[i], f, ctx, &cant_aplicados);
+		i++;
+	}
+
+	return cant_aplicados;
+}
 
 void eliminar_recursivo(nodo_t *nodo, void (*destructor)(void *))
 {
@@ -253,6 +293,9 @@ void eliminar_recursivo(nodo_t *nodo, void (*destructor)(void *))
 
 void hash_destruir(hash_t *hash)
 {
+	if (hash == NULL)
+		return;
+
 	for (size_t i = 0; i < hash->capacidad; i++)
 		eliminar_recursivo(hash->tabla[i], NULL);
 
@@ -262,6 +305,9 @@ void hash_destruir(hash_t *hash)
 
 void hash_destruir_todo(hash_t *hash, void (*destructor)(void *))
 {
+	if (hash == NULL || destructor == NULL)
+		return;
+
 	for (size_t i = 0; i < hash->capacidad; i++)
 		eliminar_recursivo(hash->tabla[i], destructor);
 
