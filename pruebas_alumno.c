@@ -139,10 +139,10 @@ void hash_insertar_devuelve_true_si_logra_insertar_y_almacena_referencia_del_val
 	char *p_VALOR_8 = VALOR_8;
 
 	hash_insertar(hash, CLAVE_7, p_VALOR_7, NULL);
-	void *reemplazado;
+	void *reemplazado = NULL;
 	hash_insertar(hash, CLAVE_7, p_VALOR_8, &reemplazado);
 
-	bool almacenado = strcmp((char*)reemplazado, VALOR_7);
+	bool almacenado = strcmp((char*)reemplazado, VALOR_7) == 0;
 
 	pa2m_afirmar(reemplazado != NULL && almacenado == true, "Insertar en un Hash valido, reemplaza un elemento anterior y devuelve referencia.");
 
