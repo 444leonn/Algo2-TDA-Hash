@@ -1,7 +1,6 @@
 #include "hash.h"
 #include "constantes.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -165,15 +164,17 @@ bool hash_insertar(hash_t *hash, char *clave, void *valor, void **encontrado)
 	return insertado || reemplazado;
 }
 
-void *hash_buscar_recursivo(nodo_t *nodo, char *clave)
+void *hash_buscar_recursivo(nodo_t *nodo, char *clave, bool *contiene)
 {
 	if (nodo == NULL)
 		return NULL;
 
-	if (strcmp(nodo->par.clave, clave) == 0)
+	if (strcmp(nodo->par.clave, clave) == 0) {
+		*contiene = true;
 		return nodo->par.valor;
+	}
 
-	return hash_buscar_recursivo(nodo->siguiente, clave);
+	return hash_buscar_recursivo(nodo->siguiente, clave, contiene);
 }
 
 void *hash_buscar(hash_t *hash, char *clave)
@@ -182,10 +183,20 @@ void *hash_buscar(hash_t *hash, char *clave)
 	if (clave_hasheada == ERROR)
 		return NULL;
 
-	return hash_buscar_recursivo(hash->tabla[clave_hasheada], clave);
+	return hash_buscar_recursivo(hash->tabla[clave_hasheada], clave, false);
 }
 
-bool hash_contiene(hash_t *hash, char *clave);
+bool hash_contiene(hash_t *hash, char *clave)
+{
+	int clave_hasheada = funcion_hash(clave, hash->capacidad);
+	if (clave_hasheada == ERROR)
+		return false;
+
+	bool contiene = false;
+	hash_buscar_recursivo(hash->tabla[clave_hasheada], clave, &contiene);
+
+	return contiene;
+}
 
 nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux)
 {
@@ -235,8 +246,7 @@ void eliminar_recursivo(nodo_t *nodo, void (*destructor)(void *))
 	if (nodo != NULL) {
 		if (destructor != NULL && nodo->par.valor != NULL)
 			destructor(nodo->par.valor);
-		if (nodo->par.clave != NULL)
-			free(nodo->par.clave);
+		free(nodo->par.clave);
 		free(nodo);
 	}
 }
@@ -245,10 +255,16 @@ void hash_destruir(hash_t *hash)
 {
 	for (size_t i = 0; i < hash->capacidad; i++)
 		eliminar_recursivo(hash->tabla[i], NULL);
+
+	free(hash->tabla);
+	free(hash);
 }
 
 void hash_destruir_todo(hash_t *hash, void (*destructor)(void *))
 {
 	for (size_t i = 0; i < hash->capacidad; i++)
 		eliminar_recursivo(hash->tabla[i], destructor);
+
+	free(hash->tabla);
+	free(hash);
 }
