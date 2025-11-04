@@ -41,11 +41,89 @@ El programa funciona recibiendo por parámetro el nombre de un archivo el cual c
 Luego se encarga de leerlo línea por línea, y parseando cada línea en una estructura de _pokemon_, cada pokemon es almacenado luego en una estructura `tp1_t`.
 A partir de esa estructura es que se utiliza la implementación del **TDA Hash**. En donde se crea una Tabla de Hash **(revisar esto)** dependiendo si la opción de búsqueda era por número de ID, o por Nombre de Pokemon, permitiendo diferenciar la manera en que se organizara la jerarquía de nuestro Diccionario en la Tabla de Hash.
 
-## Implementacion
+## Implementación
 
-Para la implementacion decidi utilizar las siguientes estructuras:
+Para la implementación de la estructura de Hash decidí utilizar las siguientes estructuras auxiliares:
 
-- 
+- **`struct nodo`**: en el que se guarda el par de clave y valor y una referencia al siguiente nodo.
+- **`struct par`**: se guarda la clave y una referencia al valor que se quiere almacenar.
+
+Luego la estructura de hash contiene un vector dinámico de nodos el cual va a ser precisamente la _Tabla de Hash_, y tres variables que almacenan, la cantidad de elementos almacenados, la capacidad total que se puede almacenar, y el factor de carga total de la tabla.
+
+### Creación
+
+A la hora de crear una Tabla de Hash, es necesario indicar el tamaño con el que va a contar inicialmente.
+Si este tamaño es menor a una capacidad mí	nima de 3, se crea la tabla de hash con esa capacidad mínima.
+Se utiliza la funcion `calloc()` de la biblioteca estandard para reservar la memoria e inicializar en 0 tanto para la estructura como la tabla.
+
+#### Complejidad Temporal
+
+La complejidad temporal de la creación podemos decir que es _O(1)_, ya que aunque utiliza `calloc()` que incializa en `NULL` o `0` las variables, siempre realizamos la misma cantidad de operaciones, modficando unicamente la cantidad de memoria que debe reservar `calloc()` para la `tabla`.
+
+### Inserción
+
+La inserción me resulto personalmente una de las operaciones mas difíciles de realizar ya que se debe tener cuidado con el _factor de carga_ de nuestra Tabla.
+Para ello lo primero que se verifica es que el mismo no supere el _0.75_ si lo supera se redimiensiona la tabla con la funcion de _rehash_.
+Luego se utiliza la _función de hash_ para transformar la clave en un numero que utilizaremos como indice para insertar en nuestra tabla.
+Finalmente se inserta la clave y el valor de manera recursiva en nuestra tabla, actualizando la cantidad y el factor de carga.
+
+#### Rehash
+
+Esta función se encarga del redimiensionamiento de la tabla.
+Para ello guarda la referencia a la tabla anterior, y crea una nueva con el doble de capacidad.
+Luego se encarga de reubicar cada uno de los nodos de la tabla anterior en la nueva, de manera tal que se vuelve a aplicar a cada clave la función de hash.
+Finalmente se recalcula el factor de carga, para la nueva capacidad de la tabla.
+
+#### Función de Hash
+
+Este módulo se encarga de transformar una string en un número asociado.
+Lo hace a partir del algoritmo _DJB2_ y con el método de la división.
+Este algoritmo se encarga de acumular el valor como entero de cada caracter (`c`), y luego acumularlo en la variable `hash` multiplicandola y luego sumandole el valor de `c`.
+Finalemente la funcion retorna el resultado de la operacion modulo entre lo acumulado y la capacidad total de la tabla.
+En el caso de que la clave pasada sea `NULL` o que la capacidad de la tabla sea menor a la minima, devuelve un valor negativo.
+
+#### Complejidad Temporal
+
+### Ver Cantidad
+
+Esta operación devuelve lo almacenado dentro de la variable de `cantidad` de la estructura.
+
+#### Complejidad Temporal
+
+Podemos decir que la complejidad para esta implementación de la estructura es de _O(1)_, ya que accede a una variable almacenada en la estructura.
+
+### Búsqueda
+
+Tanto para la función de búsqueda, como para la función que verifica si un valor está contenido dentro de nuestra Tabla de Hash, utilizo el mismo módulo recursivo.
+La diferencia está en que la función de búsqueda retorna el una referencia al valor buscado si es que lo encuentra. Y la otra función retorna un booleano que se vuelve `true` cuando encuentra la clave buscada.
+La función de búsqueda recursiva recorre los nodos enlazados que se encuentran en el índice de la tabla obtenido por la `función de hash`.
+
+#### Complejidad Temporal
+
+### Quitar
+
+Esta función se encarga de eliminar el valor y la clave asociado al pasado por parámetro.
+Para ello utiliza un módulo recursivo el cual recibe un puntero auxiliar, en el cual se guarda la referencia al valor eliminado.
+Este módulo realiza una búsqueda avanzando sobre los nodos, hasta encontrar la clave a eliminar, liberando la memoria utilizada para ese nodo.
+
+#### Complejidad Temporal
+
+### Iterador
+
+El iterador nos permite aplicarle una funcion a cada uno de los pares clave y valor, además de permitir utilizar una variable extra para utilizar en la función si es deseado.
+Continua iterando y aplicando la función siempre y cuando la función que se desea aplicar devuelva `true`, en caso de devolver `false` se frena con la iteración.
+
+#### Complejidad Temporal
+
+### Destrucción
+
+Nos permite liberar la memoria utiliza para nuestra estructura de hash.
+También tenemos un modulo que destruye los valores almacenados a través de un puntero a una función de destructor.
+Lo hace iterando toda la tabla y recorriendo los nodos de cada índice de manera recursiva.
+
+#### Complejidad Temporal
+
+Al tener que liberar la memoria para cada uno de los registros almacenados, podemos decir que la complejidad sera _O(n)_ para _n_ registros a liberar.
 
 ---
 

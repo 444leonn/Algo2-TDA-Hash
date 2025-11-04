@@ -24,6 +24,8 @@ struct hash {
 
 float calcular_factor_carga(size_t cantidad, size_t capacidad)
 {
+	if (capacidad == 0)
+		return ERROR;
 	return (float)(cantidad % capacidad);
 }
 
@@ -34,10 +36,18 @@ hash_t *hash_crear(size_t capacidad_inicial)
 		return NULL;
 
 	if (capacidad_inicial < CAPACIDAD_MINIMA) {
-		hash->tabla = calloc(CAPACIDAD_MINIMA, sizeof(nodo_t*));
+		hash->tabla = calloc(CAPACIDAD_MINIMA, sizeof(nodo_t *));
+		if (hash->tabla == NULL) {
+			free(hash);
+			return NULL;
+		}
 		hash->capacidad = CAPACIDAD_MINIMA;
 	} else {
-		hash->tabla = calloc(capacidad_inicial, sizeof(nodo_t*));
+		hash->tabla = calloc(capacidad_inicial, sizeof(nodo_t *));
+		if (hash->tabla == NULL) {
+			free(hash);
+			return NULL;
+		}
 		hash->capacidad = capacidad_inicial;
 	}
 
@@ -52,21 +62,28 @@ size_t hash_cantidad(hash_t *hash)
 	return hash->cantidad;
 }
 
+/*
+** Hashea una string de clave a un valor numerico asociado.
+** Devuelve un valor negativo en caso de Error.
+*/
 int funcion_hash(char *clave, size_t capacidad)
 {
-	if (clave == NULL)
+	if (clave == NULL || capacidad == 0)
 		return ERROR;
 
 	unsigned long hash = 5381;
     int c;
 
-    while ((c = *clave++)) {
+    while ((c = *clave++))
         hash = ((hash << 5) + hash) + (unsigned long) c;
-    }
 
 	return (int)(hash % capacidad);
 }
 
+/*
+** Funcion para hacer Rehash a una Tabla de Hash.
+** Redimensiona el tamaño al doble de su capacidad.
+*/
 void rehash(hash_t *hash)
 {
 	if (hash == NULL)
@@ -238,7 +255,6 @@ void *hash_quitar(hash_t *hash, char *clave)
 	void *resultado = NULL;
 	hash->tabla[clave_hasheada] = hash_quitar_recursivo(
 		hash->tabla[clave_hasheada], clave, &resultado);
-
 	if (resultado != NULL) {
 		hash->cantidad--;
 		hash->factor_carga = calcular_factor_carga(hash->cantidad, hash->capacidad);
