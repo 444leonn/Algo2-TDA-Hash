@@ -25,7 +25,7 @@ float calcular_factor_carga(size_t cantidad, size_t capacidad)
 {
 	if (capacidad == 0)
 		return ERROR;
-	return (float)(cantidad % capacidad);
+	return (float)(cantidad / capacidad);
 }
 
 hash_t *hash_crear(size_t capacidad_inicial)
@@ -100,7 +100,8 @@ bool rehash(hash_t *hash)
 		while (actual != NULL) {
 			nodo_t *siguiente = actual->siguiente;
 
-			int nueva_pos = funcion_hash(actual->par.clave, nueva_capacidad);
+			int nueva_pos = funcion_hash(actual->par.clave,
+						     nueva_capacidad);
 
 			actual->siguiente = nueva_tabla[nueva_pos];
 			nueva_tabla[nueva_pos] = actual;
@@ -113,7 +114,8 @@ bool rehash(hash_t *hash)
 
 	hash->tabla = nueva_tabla;
 	hash->capacidad = nueva_capacidad;
-	hash->factor_carga = calcular_factor_carga(hash->cantidad, hash->capacidad);
+	hash->factor_carga =
+		calcular_factor_carga(hash->cantidad, hash->capacidad);
 
 	return true;
 }
@@ -229,7 +231,9 @@ bool hash_contiene(hash_t *hash, char *clave)
 	return contiene;
 }
 
-nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux, size_t *cantidad, float *factor_carga, size_t capacidad)
+nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux,
+			      size_t *cantidad, float *factor_carga,
+			      size_t capacidad)
 {
 	if (nodo == NULL)
 		return NULL;
@@ -245,7 +249,8 @@ nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux, size_t *can
 
 		return siguiente;
 	}
-	nodo->siguiente = hash_quitar_recursivo(nodo->siguiente, clave, aux, cantidad, factor_carga, capacidad);
+	nodo->siguiente = hash_quitar_recursivo(
+		nodo->siguiente, clave, aux, cantidad, factor_carga, capacidad);
 
 	return nodo;
 }
@@ -261,7 +266,8 @@ void *hash_quitar(hash_t *hash, char *clave)
 
 	void *resultado = NULL;
 	hash->tabla[clave_hasheada] = hash_quitar_recursivo(
-		hash->tabla[clave_hasheada], clave, &resultado, &hash->cantidad, &hash->factor_carga, hash->capacidad);
+		hash->tabla[clave_hasheada], clave, &resultado, &hash->cantidad,
+		&hash->factor_carga, hash->capacidad);
 
 	return resultado;
 }
