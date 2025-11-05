@@ -60,6 +60,10 @@ Se utiliza la funcion `calloc()` de la biblioteca estandard para reservar la mem
 
 La complejidad temporal de la creación podemos decir que es _O(1)_, ya que aunque utiliza `calloc()` que incializa en `NULL` o `0` las variables, siempre realizamos la misma cantidad de operaciones, modficando unicamente la cantidad de memoria que debe reservar `calloc()` para la `tabla`.
 
+<div align="center">
+<img src="img/diagrama-hash-creacion.gif">
+</div>
+
 ### Inserción
 
 La inserción me resulto personalmente una de las operaciones mas difíciles de realizar ya que se debe tener cuidado con el _factor de carga_ de nuestra Tabla.  

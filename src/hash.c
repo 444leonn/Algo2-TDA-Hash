@@ -238,7 +238,8 @@ bool hash_contiene(hash_t *hash, char *clave)
 	return contiene;
 }
 
-nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux, bool *eliminado)
+nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux,
+			      bool *eliminado)
 {
 	if (nodo == NULL)
 		return NULL;
@@ -253,8 +254,8 @@ nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux, bool *elimi
 
 		return siguiente;
 	}
-	nodo->siguiente = hash_quitar_recursivo(
-		nodo->siguiente, clave, aux, eliminado);
+	nodo->siguiente =
+		hash_quitar_recursivo(nodo->siguiente, clave, aux, eliminado);
 
 	return nodo;
 }
@@ -274,7 +275,8 @@ void *hash_quitar(hash_t *hash, char *clave)
 		hash->tabla[clave_hasheada], clave, &resultado, &eliminado);
 	if (eliminado == true) {
 		hash->cantidad--;
-		hash->factor_carga = calcular_factor_carga(hash->cantidad, hash->capacidad);
+		hash->factor_carga =
+			calcular_factor_carga(hash->cantidad, hash->capacidad);
 	}
 
 	return resultado;
