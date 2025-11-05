@@ -92,6 +92,10 @@ La complejidad temporal de esta operación posee gran complejidad ya que el caso
 Sin embargo, al utilizar una buena función de hash, en el sentido de bajar la posibilidad de las colisiones, y suponiendo que el tamaño con el que se inicializa la tabla tiene consideración el asunto de las colisiones.  
 En este caso podemos decir que la complejidad va a tender a ser de _O(n)_.	
 
+<div align="center">
+<img src="img/diagrama-hash-insertar.gif">
+</div>
+
 ### Ver Cantidad
 
 Esta operación devuelve lo almacenado dentro de la variable de `cantidad` de la estructura.
