@@ -183,7 +183,8 @@ A este resultado de que mas de una Clave se corresponda con el mismo índice den
 
 **Tipos de Hash**
 
-- **Hash Abierto**: Se caracteriza por tener un _Direccionamiento Cerrado_, lo cual implica que mas alla de las colisiones generadas, la clave se va a encontrar dentro de la tabla siempre en la posición obtenida de la funcion de Hash. Se lo denomina _"Hash Abierto"_ ya que se utiliza una estructura de soporte para almacenar los pares clave y valor en la tabla, y no directamente dentro de la misma.  
+- **Hash Abierto**: Se caracteriza por tener un _Direccionamiento Cerrado_, lo cual implica que mas alla de las colisiones generadas, la clave se va a encontrar dentro de la tabla siempre en la posición obtenida de la funcion de Hash.  
+Se lo denomina _"Hash Abierto"_ ya que se utiliza una estructura de soporte para almacenar los pares clave y valor en la tabla, y no directamente dentro de la misma.  
 Para la resolución de las colisiones se suele almacenar el par clave valor, a continuación del valor que ya se encontraba previamente en la Tabla de Hash, a este metodo se lo llama de _Encadenamiento_, ya que vamos enlazando pares de claves y valores, dentro de un mismo indice de la Tabla.
 
 <div align="center">
