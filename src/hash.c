@@ -141,6 +141,8 @@ nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 		nodo = calloc(1, sizeof(nodo_t));
 		if (nodo == NULL)
 			return NULL;
+		if (encontrado != NULL)
+			*encontrado = NULL;
 
 		nodo->par.valor = valor;
 		nodo->par.clave = copiar_clave(clave);
