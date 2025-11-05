@@ -83,39 +83,39 @@ int funcion_hash(char *clave, size_t capacidad)
 /*
 ** Funcion para hacer Rehash a una Tabla de Hash.
 ** Redimensiona el tamaño al doble de su capacidad.
+** Devuelve true si pudo redimensionar la tabla, false en caso contrario.
 */
-void rehash(hash_t *hash)
+bool rehash(hash_t *hash)
 {
 	if (hash == NULL)
-		return;
+		return false;
 
-	size_t capacidad_anterior = hash->capacidad;
-	nodo_t **tabla_anterior = hash->tabla;
+	size_t nueva_capacidad = 2 * hash->capacidad;
+	nodo_t **nueva_tabla = calloc(nueva_capacidad, sizeof(nodo_t *));
+	if (nueva_tabla == NULL)
+		return false;
 
-	hash->capacidad = 2 * capacidad_anterior;
-	hash->tabla = calloc(hash->capacidad, sizeof(nodo_t*));
-	if (hash->tabla == NULL) {
-		hash->tabla = tabla_anterior;
-		hash->capacidad = capacidad_anterior;
-		return;
-	}
-
-	for (size_t i = 0; i < capacidad_anterior; i++) {
-		nodo_t *actual = tabla_anterior[i];
+	for (size_t i = 0; i < hash->capacidad; i++) {
+		nodo_t *actual = hash->tabla[i];
 		while (actual != NULL) {
 			nodo_t *siguiente = actual->siguiente;
 
-			int nuevo_indice = funcion_hash(actual->par.clave, hash->capacidad);
+			int nueva_pos = funcion_hash(actual->par.clave, nueva_capacidad);
 
-			actual->siguiente = hash->tabla[nuevo_indice];
-			hash->tabla[nuevo_indice] = actual;
+			actual->siguiente = nueva_tabla[nueva_pos];
+			nueva_tabla[nueva_pos] = actual;
 
 			actual = siguiente;
 		}
 	}
-	free(tabla_anterior);
 
+	free(hash->tabla);
+
+	hash->tabla = nueva_tabla;
+	hash->capacidad = nueva_capacidad;
 	hash->factor_carga = calcular_factor_carga(hash->cantidad, hash->capacidad);
+
+	return true;
 }
 
 char *copiar_clave(char *clave)
@@ -164,8 +164,11 @@ bool hash_insertar(hash_t *hash, char *clave, void *valor, void **encontrado)
 	if (hash == NULL || clave == NULL)
 		return false;
 
-	if (hash->factor_carga >= 0.75)
-		rehash(hash);
+	if (hash->factor_carga >= 0.75) {
+		bool resultado_rehash = rehash(hash);
+		if (resultado_rehash == false)
+			return false;
+	}
 
 	int clave_hasheada = funcion_hash(clave, hash->capacidad);
 	if (clave_hasheada == ERROR)
