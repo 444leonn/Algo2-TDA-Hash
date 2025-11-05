@@ -141,8 +141,6 @@ nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 		nodo = calloc(1, sizeof(nodo_t));
 		if (nodo == NULL)
 			return NULL;
-		if (encontrado != NULL)
-			*encontrado = NULL;
 
 		nodo->par.valor = valor;
 		nodo->par.clave = copiar_clave(clave);
@@ -170,6 +168,9 @@ nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 
 bool hash_insertar(hash_t *hash, char *clave, void *valor, void **encontrado)
 {
+	if (encontrado != NULL)
+		*encontrado = NULL;
+
 	if (hash == NULL || clave == NULL)
 		return false;
 
@@ -320,12 +321,10 @@ void eliminar_recursivo(nodo_t *nodo, void (*destructor)(void *))
 
 	eliminar_recursivo(nodo->siguiente, destructor);
 
-	if (nodo != NULL) {
-		if (destructor != NULL)
-			destructor(nodo->par.valor);
-		free(nodo->par.clave);
-		free(nodo);
-	}
+	if (destructor != NULL)
+		destructor(nodo->par.valor);
+	free(nodo->par.clave);
+	free(nodo);
 }
 
 void hash_destruir(hash_t *hash)
@@ -342,7 +341,7 @@ void hash_destruir(hash_t *hash)
 
 void hash_destruir_todo(hash_t *hash, void (*destructor)(void *))
 {
-	if (hash == NULL || destructor == NULL)
+	if (hash == NULL)
 		return;
 
 	for (size_t i = 0; i < hash->capacidad; i++)
