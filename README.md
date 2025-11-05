@@ -84,6 +84,10 @@ En el caso de que la clave pasada sea `NULL` o que la capacidad de la tabla sea 
 
 #### Complejidad Temporal
 
+La complejidad temporal de esta operación posee gran complejidad ya que el caso en el que se _rehashea_ la tabla debemos copiar todos los elementos de la tabla, por lo que en ese caso la complejidad sería de _O(n)_.
+Sin embargo, al utilizar una buena función de hash, en el sentido de bajar la posibilidad de las colisiones, y suponiendo que el tamaño con el que se inicializa la tabla tiene consideración el asunto de las colisiones.
+En este caso podemos decir que la complejidad va a tender a ser de _O(n)_.	
+
 ### Ver Cantidad
 
 Esta operación devuelve lo almacenado dentro de la variable de `cantidad` de la estructura.
@@ -100,6 +104,8 @@ La función de búsqueda recursiva recorre los nodos enlazados que se encuentran
 
 #### Complejidad Temporal
 
+Esta operación mantiene la misma idea que la inserción, por lo que podemos decir que tendera a _O(1)_.
+
 ### Quitar
 
 Esta función se encarga de eliminar el valor y la clave asociado al pasado por parámetro.
@@ -108,12 +114,16 @@ Este módulo realiza una búsqueda avanzando sobre los nodos, hasta encontrar la
 
 #### Complejidad Temporal
 
+Esta operación al igual que insertar podemos decir que tiende a _O(1)_ ya que recorremos unicamente la lista de nodos enlazados que se encuentra en el indice de nuestra tabla de Hash.
+
 ### Iterador
 
-El iterador nos permite aplicarle una funcion a cada uno de los pares clave y valor, además de permitir utilizar una variable extra para utilizar en la función si es deseado.
+El iterador nos permite aplicarle una función a cada uno de los pares clave y valor, además de permitir utilizar una variable extra para utilizar en la función si es deseado.
 Continua iterando y aplicando la función siempre y cuando la función que se desea aplicar devuelva `true`, en caso de devolver `false` se frena con la iteración.
 
 #### Complejidad Temporal
+
+Al iterar los elementos almacenados dentro de la lista podemos decir que la complejidad sera de _O(n)_.
 
 ### Destrucción
 
@@ -141,12 +151,16 @@ En base a esto podemos encontrar diferentes formas de implementarlo.
 
 Una implementacion sencilla sería la de utilizar un **vector** (puede ser dinamico o estatico), en donde se almacenen punteros/direcciones de memoria, sobre los cuales almacenamos los pares de _clave_, _valor_ que deseamos almacenar.
 
-- INSERTAR IMAGEN!
+<div align="center">
+<img src="img/diagrama-diccionario-vector.svg">
+</div>
 
 Otra manera de implementar sería a partir de la implementación de alguno de los TDA, realizado en los TPs anteriores, como lo podrían ser por ejemplo utilizando una **Lista de Nodos Enlazados**, o un **Arbol Binario de Busqueda** (ABB).
 En particular si utilizamos un Arbol Binario de Busqueda, en donde cada Nodo del arbol almacenaria una referencia al par clave y valor del diccionario.
 
-- INSERTAR IMAGEN!
+<div align="center">
+<img src="img/diagrama-diccionario-abb.svg">
+</div>
 
 **Tabla de Hash**
 
@@ -164,14 +178,18 @@ A este resultado de que mas de una Clave se corresponda con el mismo índice den
 - **Hash Abierto**: Se caracteriza por tener un _Direccionamiento Cerrado_, lo cual implica que mas alla de las colisiones generadas, la clave se va a encontrar dentro de la tabla siempre en la posición obtenida de la funcion de Hash. Se lo denomina _"Hash Abierto"_ ya que se utiliza una estructura de soporte para almacenar los pares clave y valor en la tabla, y no directamente dentro de la misma.
 Para la resolución de las colisiones se suele almacenar el par clave valor, a continuación del valor que ya se encontraba previamente en la Tabla de Hash, a este metodo se lo llama de _Encadenamiento_, ya que vamos enlazando pares de claves y valores, dentro de un mismo indice de la Tabla.
 
-	- INSERTAR IMAGEN!
+<div align="center">
+<img src="img/diagrama-hash-abierto.svg">
+</div>
 
 - **Hash Cerrado**: En este otro tipo de Hash el _Direccionamiento_ decimos que es _Abierto_, esto se da ya que los valores son almacenados directamente en la tabla de hash, en el indice resultante de aplicar la funcion de hash a la clave.
 En este tipo de Tabla se establece que su _tamaño_ debe ser mayor o igual que el numero claves.
 Las colisiones en este tipo de Hash se resuelven recorriendo la tabla hasta encontrar el proximo espacio disponible en el que almacenar el valor, (aunque esta manera de recorrer puede variar).
 Esta metodologia a la hora de resolver colisiones genera que al buscar una clave dentro de la Tabla de Hash, el indice que accedamos obtenido de la funcion de Hash no contenga el valor que buscamos, sino que el mismo haya sido desplazado dentro de la tabla.
 
-	- INSERTAR IMAGEN!
+<div align="center">
+<img src="img/diagrama-hash-cerrado.svg">
+</div>
 
 **Tipos de Métodos de Búsqueda**
 
