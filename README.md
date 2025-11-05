@@ -78,7 +78,7 @@ Finalmente se recalcula el factor de carga, para la nueva capacidad de la tabla.
 
 Este módulo se encarga de transformar una string en un número asociado.  
 Lo hace a partir del algoritmo _DJB2_ y con el método de la división.  
-Este algoritmo se encarga de acumular el valor como entero de cada caracter (`c`), y luego acumularlo en la variable `hash` multiplicandola y luego sumandole el valor de `c`.  
+Este algoritmo creado por _"Daniel J. Bernstein"_ se encarga de acumular el valor como entero de cada caracter (`c`), y luego acumularlo en la variable `hash` multiplicandola y luego sumandole el valor de `c`.  
 Finalemente la funcion retorna el resultado de la operacion modulo entre lo acumulado y la capacidad total de la tabla.  
 En el caso de que la clave pasada sea `NULL` o que la capacidad de la tabla sea menor a la minima, devuelve un valor negativo.
 
@@ -207,7 +207,7 @@ Para ello, se utiliza un valor llamado *Factor de Carga*, el cual nos indica est
 **Factor de Carga**
 
 Consiste en el valor resultante de la división entre el _número total de claves almacenadas (n)_ y la _capacidad total de la Tabla (m)_.  
-_α = n / m_
+		_α = n / m_
 
 **Redimensionamiento / Rehash**
 
