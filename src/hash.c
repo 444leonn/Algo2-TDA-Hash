@@ -146,6 +146,11 @@ nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 
 		nodo->par.valor = valor;
 		nodo->par.clave = copiar_clave(clave);
+		if (nodo->par.clave == NULL) {
+			free(nodo);
+			return NULL;
+		}
+
 		*insertado = true;
 		return nodo;
 	} else if (strcmp(nodo->par.clave, clave) == 0) {
@@ -233,9 +238,7 @@ bool hash_contiene(hash_t *hash, char *clave)
 	return contiene;
 }
 
-nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux,
-			      size_t *cantidad, float *factor_carga,
-			      size_t capacidad)
+nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux, bool *eliminado)
 {
 	if (nodo == NULL)
 		return NULL;
@@ -246,13 +249,12 @@ nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux,
 		free(nodo->par.clave);
 		free(nodo);
 
-		*cantidad = *cantidad - 1;
-		*factor_carga = calcular_factor_carga(*cantidad, capacidad);
+		*eliminado = true;
 
 		return siguiente;
 	}
 	nodo->siguiente = hash_quitar_recursivo(
-		nodo->siguiente, clave, aux, cantidad, factor_carga, capacidad);
+		nodo->siguiente, clave, aux, eliminado);
 
 	return nodo;
 }
@@ -266,10 +268,14 @@ void *hash_quitar(hash_t *hash, char *clave)
 	if (clave_hasheada == ERROR)
 		return NULL;
 
+	bool eliminado = false;
 	void *resultado = NULL;
 	hash->tabla[clave_hasheada] = hash_quitar_recursivo(
-		hash->tabla[clave_hasheada], clave, &resultado, &hash->cantidad,
-		&hash->factor_carga, hash->capacidad);
+		hash->tabla[clave_hasheada], clave, &resultado, &eliminado);
+	if (eliminado == true) {
+		hash->cantidad--;
+		hash->factor_carga = calcular_factor_carga(hash->cantidad, hash->capacidad);
+	}
 
 	return resultado;
 }
@@ -313,7 +319,7 @@ void eliminar_recursivo(nodo_t *nodo, void (*destructor)(void *))
 	eliminar_recursivo(nodo->siguiente, destructor);
 
 	if (nodo != NULL) {
-		if (destructor != NULL && nodo->par.valor != NULL)
+		if (destructor != NULL)
 			destructor(nodo->par.valor);
 		free(nodo->par.clave);
 		free(nodo);
