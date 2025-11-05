@@ -74,8 +74,9 @@ int funcion_hash(char *clave, size_t capacidad)
 	unsigned long hash = 5381;
     int c;
 
-    while ((c = *clave++))
-        hash = ((hash << 5) + hash) + (unsigned long) c;
+	while ((c = *clave++)) {
+    	hash = ((hash << 5) + hash) + (unsigned long) c;
+	}
 
 	return (int)(hash % capacidad);
 }

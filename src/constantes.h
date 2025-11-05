@@ -28,6 +28,7 @@
 #define PARAMETRO_INVALIDO "Error, parametro ingresado invalido."
 #define FALLO_LECTURA_ARCHIVO "Error, ha falla la lectura del archivo."
 #define FALLO_CREACION_ABB "Error, ha fallado creacion de ABB."
+#define FALLO_CREACION_HASH "Error, ha fallado creacion de HASH."
 #define NO_ENCONTRADO "El Pokemon no ha sido encontrado."
 #define OPCION_INVALIDA "Error, opcion de busqueda invalida."
 
