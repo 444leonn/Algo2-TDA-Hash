@@ -24,7 +24,8 @@
 #define OPCION_NOMBRE "nombrenombrEnombREnomBREnoMBREnOMBRENOMBRE"
 
 // MENSAJES DE ERROR
-#define CANT_PARAMETROS "Error, debe ingresar una cantidad de parametros valida."
+#define CANT_PARAMETROS \
+	"Error, debe ingresar una cantidad de parametros valida."
 #define PARAMETRO_INVALIDO "Error, parametro ingresado invalido."
 #define FALLO_LECTURA_ARCHIVO "Error, ha falla la lectura del archivo."
 #define FALLO_CREACION_ABB "Error, ha fallado creacion de ABB."

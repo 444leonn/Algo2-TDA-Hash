@@ -67,7 +67,8 @@ void realizar_busqueda_nombre(tp1_t *tp1, char *nombre)
 		printf(TROJO FALLO_CREACION_HASH TNORMAL "\n");
 		return;
 	}
-	tp1_con_cada_pokemon(tp1, insertar_pokemon_hash_nombre, hash_pokemones_nombre);
+	tp1_con_cada_pokemon(tp1, insertar_pokemon_hash_nombre,
+			     hash_pokemones_nombre);
 
 	struct pokemon *resultado_busqueda =
 		hash_buscar(hash_pokemones_nombre, nombre);

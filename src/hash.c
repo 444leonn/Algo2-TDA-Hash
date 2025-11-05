@@ -5,12 +5,11 @@
 #include <string.h>
 
 typedef struct par {
-    char *clave;
+	char *clave;
 	void *valor;
 } par_t;
 
-typedef struct nodo
-{
+typedef struct nodo {
 	struct par par;
 	struct nodo *siguiente;
 } nodo_t;
@@ -72,10 +71,10 @@ int funcion_hash(char *clave, size_t capacidad)
 		return ERROR;
 
 	unsigned long hash = 5381;
-    int c;
+	int c;
 
 	while ((c = *clave++)) {
-    	hash = ((hash << 5) + hash) + (unsigned long) c;
+		hash = ((hash << 5) + hash) + (unsigned long)c;
 	}
 
 	return (int)(hash % capacidad);
@@ -101,8 +100,6 @@ void rehash(hash_t *hash)
 		return;
 	}
 
-	hash->cantidad = 0;
-
 	for (size_t i = 0; i < capacidad_anterior; i++) {
 		nodo_t *actual = tabla_anterior[i];
 		while (actual != NULL) {
@@ -112,12 +109,10 @@ void rehash(hash_t *hash)
 
 			actual->siguiente = hash->tabla[nuevo_indice];
 			hash->tabla[nuevo_indice] = actual;
-			hash->cantidad++;
 
 			actual = siguiente;
 		}
 	}
-
 	free(tabla_anterior);
 
 	hash->factor_carga = calcular_factor_carga(hash->cantidad, hash->capacidad);
@@ -137,7 +132,8 @@ char *copiar_clave(char *clave)
 }
 
 nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
-			void **encontrado, bool *insertado, bool *reemplazado)
+				void **encontrado, bool *insertado,
+				bool *reemplazado)
 {
 	if (nodo == NULL) {
 		nodo = calloc(1, sizeof(nodo_t));
@@ -148,9 +144,7 @@ nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 		nodo->par.clave = copiar_clave(clave);
 		*insertado = true;
 		return nodo;
-	}
-
-	if (strcmp(nodo->par.clave, clave) == 0) {
+	} else if (strcmp(nodo->par.clave, clave) == 0) {
 		if (encontrado != NULL)
 			*encontrado = nodo->par.valor;
 		nodo->par.valor = valor;
@@ -158,7 +152,9 @@ nodo_t *hash_insertar_recursivo(nodo_t *nodo, char *clave, void *valor,
 		return nodo;
 	}
 
-	nodo->siguiente = hash_insertar_recursivo(nodo->siguiente, clave, valor, encontrado, insertado, reemplazado);
+	nodo->siguiente = hash_insertar_recursivo(nodo->siguiente, clave, valor,
+						  encontrado, insertado,
+						  reemplazado);
 
 	return nodo;
 }
@@ -176,10 +172,13 @@ bool hash_insertar(hash_t *hash, char *clave, void *valor, void **encontrado)
 		return false;
 
 	bool insertado = false, reemplazado = false;
-	hash->tabla[clave_hasheada] = hash_insertar_recursivo(hash->tabla[clave_hasheada], clave, valor, encontrado, &insertado, &reemplazado);
+	hash->tabla[clave_hasheada] = hash_insertar_recursivo(
+		hash->tabla[clave_hasheada], clave, valor, encontrado,
+		&insertado, &reemplazado);
 	if (insertado == true) {
 		hash->cantidad++;
-		hash->factor_carga = calcular_factor_carga(hash->cantidad, hash->capacidad);
+		hash->factor_carga =
+			calcular_factor_carga(hash->cantidad, hash->capacidad);
 	}
 
 	return insertado || reemplazado;
@@ -208,7 +207,8 @@ void *hash_buscar(hash_t *hash, char *clave)
 		return NULL;
 
 	bool contiene = false;
-	return hash_buscar_recursivo(hash->tabla[clave_hasheada], clave, &contiene);
+	return hash_buscar_recursivo(hash->tabla[clave_hasheada], clave,
+				     &contiene);
 }
 
 bool hash_contiene(hash_t *hash, char *clave)
@@ -226,7 +226,7 @@ bool hash_contiene(hash_t *hash, char *clave)
 	return contiene;
 }
 
-nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux)
+nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux, size_t *cantidad, float *factor_carga, size_t capacidad)
 {
 	if (nodo == NULL)
 		return NULL;
@@ -237,9 +237,12 @@ nodo_t *hash_quitar_recursivo(nodo_t *nodo, char *clave, void **aux)
 		free(nodo->par.clave);
 		free(nodo);
 
+		*cantidad = *cantidad - 1;
+		*factor_carga = calcular_factor_carga(*cantidad, capacidad);
+
 		return siguiente;
 	}
-	nodo->siguiente = hash_quitar_recursivo(nodo->siguiente, clave, aux);
+	nodo->siguiente = hash_quitar_recursivo(nodo->siguiente, clave, aux, cantidad, factor_carga, capacidad);
 
 	return nodo;
 }
@@ -255,16 +258,13 @@ void *hash_quitar(hash_t *hash, char *clave)
 
 	void *resultado = NULL;
 	hash->tabla[clave_hasheada] = hash_quitar_recursivo(
-		hash->tabla[clave_hasheada], clave, &resultado);
-	if (resultado != NULL) {
-		hash->cantidad--;
-		hash->factor_carga = calcular_factor_carga(hash->cantidad, hash->capacidad);
-	}
+		hash->tabla[clave_hasheada], clave, &resultado, &hash->cantidad, &hash->factor_carga, hash->capacidad);
 
 	return resultado;
 }
 
-bool iterar_recursivo(nodo_t *nodo, bool (*f)(char *, void *, void *), void *ctx, size_t *cantidad_aplicados)
+bool iterar_recursivo(nodo_t *nodo, bool (*f)(char *, void *, void *),
+		      void *ctx, size_t *cantidad_aplicados)
 {
 	if (nodo == NULL)
 		return true;
@@ -286,7 +286,8 @@ size_t hash_iterar(hash_t *hash, bool (*f)(char *, void *, void *), void *ctx)
 	bool resultado = true;
 	size_t i = 0, cant_aplicados = 0;
 	while (resultado == true && i < hash->capacidad) {
-		resultado = iterar_recursivo(hash->tabla[i], f, ctx, &cant_aplicados);
+		resultado = iterar_recursivo(hash->tabla[i], f, ctx,
+					     &cant_aplicados);
 		i++;
 	}
 

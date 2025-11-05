@@ -17,7 +17,9 @@ void hash_crear_lo_crea_correctamente_para_cantidad_menor()
 {
 	hash_t *hash = hash_crear(CANT_INVALIDA);
 
-	pa2m_afirmar(hash != NULL, "Crear un Hash con Cantidad Invalida, lo crea con cantidad minima.");
+	pa2m_afirmar(
+		hash != NULL,
+		"Crear un Hash con Cantidad Invalida, lo crea con cantidad minima.");
 
 	if (hash != NULL)
 		hash_destruir(hash);
@@ -50,7 +52,8 @@ void hash_cantidad_devuelve_0_para_hash_vacio()
 	size_t cantidad = hash_cantidad(hash);
 	pa2m_afirmar(
 		cantidad == 0,
-		"Cantidad del Hash es igual a 0 para un Hash vacio. (devolvió: %d)", cantidad);
+		"Cantidad del Hash es igual a 0 para un Hash vacio. (devolvió: %d)",
+		cantidad);
 
 	if (hash != NULL)
 		hash_destruir(hash);
@@ -114,7 +117,9 @@ void hash_insertar_devuelve_false_para_hash_invalido()
 
 	bool resultado = hash_insertar(NULL, CLAVE_1, p_VALOR_1, NULL);
 
-	pa2m_afirmar(resultado == false, "Insertar en un Hash inválido, no lo inserta y devuelve false.");
+	pa2m_afirmar(
+		resultado == false,
+		"Insertar en un Hash inválido, no lo inserta y devuelve false.");
 }
 
 void hash_insertar_devuelve_false_para_clave_invalida()
@@ -155,9 +160,11 @@ void hash_insertar_devuelve_true_si_logra_insertar_y_almacena_referencia_del_val
 	void *reemplazado = NULL;
 	hash_insertar(hash, CLAVE_7, p_VALOR_8, &reemplazado);
 
-	bool almacenado = strcmp((char*)reemplazado, VALOR_7) == 0;
+	bool almacenado = strcmp((char *)reemplazado, VALOR_7) == 0;
 
-	pa2m_afirmar(reemplazado != NULL && almacenado == true, "Insertar en un Hash valido, reemplaza un elemento anterior y devuelve referencia.");
+	pa2m_afirmar(
+		reemplazado != NULL && almacenado == true,
+		"Insertar en un Hash valido, reemplaza un elemento anterior y devuelve referencia.");
 
 	if (hash != NULL)
 		hash_destruir(hash);
@@ -166,7 +173,10 @@ void hash_insertar_devuelve_true_si_logra_insertar_y_almacena_referencia_del_val
 void hash_buscar_devuelve_null_para_hash_invalido()
 {
 	void *resultado = hash_buscar(NULL, CLAVE_1);
-	pa2m_afirmar(resultado == NULL, "Intentar buscar en un Hash Invalido devuelve NULL. (devolvió: %p)", resultado);
+	pa2m_afirmar(
+		resultado == NULL,
+		"Intentar buscar en un Hash Invalido devuelve NULL. (devolvió: %p)",
+		resultado);
 }
 
 void hash_buscar_devuelve_null_para_clave_no_encontrada()
@@ -188,7 +198,10 @@ void hash_buscar_devuelve_null_para_clave_no_encontrada()
 
 	void *resultado = hash_buscar(hash, CLAVE_7);
 
-	pa2m_afirmar(resultado == NULL, "Intentar buscar una clave inexistente en Hash devuelve NULL. (devolvió: %p)", resultado);
+	pa2m_afirmar(
+		resultado == NULL,
+		"Intentar buscar una clave inexistente en Hash devuelve NULL. (devolvió: %p)",
+		resultado);
 
 	if (hash != NULL)
 		hash_destruir(hash);
@@ -227,7 +240,9 @@ void hash_buscar_devuelve_referencia_al_valor_encontrado()
 void hash_contiene_devuelve_false_para_hash_invalido()
 {
 	bool resultado = hash_contiene(NULL, CLAVE_1);
-	pa2m_afirmar(resultado == false, "Verificar si un valor esta dentro del Hash devuelve FALSE para Hash Invalido.");
+	pa2m_afirmar(
+		resultado == false,
+		"Verificar si un valor esta dentro del Hash devuelve FALSE para Hash Invalido.");
 }
 
 void hash_contiene_devuelve_false_si_no_contiene_la_clave()
@@ -250,11 +265,12 @@ void hash_contiene_devuelve_false_si_no_contiene_la_clave()
 
 	bool resultado = hash_contiene(hash, CLAVE_7);
 
-	pa2m_afirmar(resultado == false, "Verificar si un valor esta dentro del Hash devuelve FALSE si la clave no existe.");
+	pa2m_afirmar(
+		resultado == false,
+		"Verificar si un valor esta dentro del Hash devuelve FALSE si la clave no existe.");
 
 	if (hash != NULL)
 		hash_destruir(hash);
-
 }
 
 void hash_contiene_devuelve_true_si_contiene_la_clave()
@@ -277,7 +293,8 @@ void hash_contiene_devuelve_true_si_contiene_la_clave()
 
 	bool resultado = hash_contiene(hash, CLAVE_4);
 
-	pa2m_afirmar(resultado == true,
+	pa2m_afirmar(
+		resultado == true,
 		"Verificar si un valor esta dentro del Hash devuelve TRUE si la clave existe");
 
 	if (hash != NULL)
@@ -287,7 +304,10 @@ void hash_contiene_devuelve_true_si_contiene_la_clave()
 void hash_quitar_devuelve_null_para_hash_invalido()
 {
 	void *resultado = hash_quitar(NULL, CLAVE_1);
-	pa2m_afirmar(resultado == NULL, "Intentar quitar clave en Hash Invalido devuelve NULL. (devolvió: %p)", resultado);
+	pa2m_afirmar(
+		resultado == NULL,
+		"Intentar quitar clave en Hash Invalido devuelve NULL. (devolvió: %p)",
+		resultado);
 }
 
 void hash_quitar_devuelve_null_para_clave_inexistente()
@@ -323,10 +343,12 @@ void hash_quitar_quita_el_elemento_y_devuelve_referencia_al_valor_almacenado()
 	hash_insertar(hash, CLAVE_6, p_VALOR_6, NULL);
 
 	void *resultado = hash_quitar(hash, CLAVE_4);
-	bool son_iguales = strcmp(p_VALOR_4, (char*)resultado) == 0;
+	bool son_iguales = strcmp(p_VALOR_4, (char *)resultado) == 0;
 
-	pa2m_afirmar(resultado != NULL && son_iguales,
-		"Quitar una clave de un Hash, devuelve referencia al elemento que almacenaba. (devolvió: %d, esperado: %d)", resultado, p_VALOR_4);
+	pa2m_afirmar(
+		resultado != NULL && son_iguales,
+		"Quitar una clave de un Hash, devuelve referencia al elemento que almacenaba. (devolvió: %d, esperado: %d)",
+		resultado, p_VALOR_4);
 
 	if (hash != NULL)
 		hash_destruir(hash);
@@ -351,13 +373,16 @@ void hash_quitar_quita_varios_elementos_y_devuelve_sus_referencias()
 	hash_insertar(hash, CLAVE_6, p_VALOR_6, NULL);
 
 	void *resultado_1 = hash_quitar(hash, CLAVE_4);
-	bool son_iguales_1 = strcmp(p_VALOR_4, (char*)resultado_1) == 0;
+	bool son_iguales_1 = strcmp(p_VALOR_4, (char *)resultado_1) == 0;
 
 	void *resultado_2 = hash_quitar(hash, CLAVE_1);
-	bool son_iguales_2 = strcmp(p_VALOR_1, (char*)resultado_2) == 0;
+	bool son_iguales_2 = strcmp(p_VALOR_1, (char *)resultado_2) == 0;
 
-	pa2m_afirmar(resultado_1 != NULL && resultado_2 != NULL && son_iguales_1 && son_iguales_2,
-		"Quitar varias claves de un Hash, devuelve referencia a los elementos que almacenaba. (devolvió: %d y %d, esperado: %d y %d)", resultado_1, resultado_2, p_VALOR_4, p_VALOR_1);
+	pa2m_afirmar(
+		resultado_1 != NULL && resultado_2 != NULL && son_iguales_1 &&
+			son_iguales_2,
+		"Quitar varias claves de un Hash, devuelve referencia a los elementos que almacenaba. (devolvió: %d y %d, esperado: %d y %d)",
+		resultado_1, resultado_2, p_VALOR_4, p_VALOR_1);
 
 	if (hash != NULL)
 		hash_destruir(hash);
@@ -366,7 +391,10 @@ void hash_quitar_quita_varios_elementos_y_devuelve_sus_referencias()
 void hash_iterar_devuelve_0_para_hash_invalido()
 {
 	size_t resultado = hash_iterar(NULL, funcion_iterador, NULL);
-	pa2m_afirmar(resultado == 0, "Iterar un Hash Invalido, no lo itera y devuelve 0. (devolvió: %ld)", resultado);
+	pa2m_afirmar(
+		resultado == 0,
+		"Iterar un Hash Invalido, no lo itera y devuelve 0. (devolvió: %ld)",
+		resultado);
 }
 
 void hash_iterar_devuelve_0_para_funcion_nula()
@@ -374,7 +402,10 @@ void hash_iterar_devuelve_0_para_funcion_nula()
 	hash_t *hash = hash_crear(CAPACIDAD_INICIAL);
 
 	size_t resultado = hash_iterar(hash, NULL, NULL);
-	pa2m_afirmar(resultado == 0, "Iterar un Hash con funcion invalida, no lo itera y devuelve 0. (devolvió: %ld)", resultado);
+	pa2m_afirmar(
+		resultado == 0,
+		"Iterar un Hash con funcion invalida, no lo itera y devuelve 0. (devolvió: %ld)",
+		resultado);
 
 	if (hash != NULL)
 		hash_destruir(hash);
