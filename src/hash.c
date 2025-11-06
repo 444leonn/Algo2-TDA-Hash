@@ -59,11 +59,8 @@ size_t hash_cantidad(hash_t *hash)
 ** Hashea una string de clave a un valor numerico asociado.
 ** Devuelve un valor negativo en caso de Error.
 */
-int funcion_hash(char *clave, size_t capacidad)
+unsigned long hash_djb2(char *clave)
 {
-	if (clave == NULL || capacidad == 0)
-		return ERROR;
-
 	unsigned long hash = 5381;
 	int c;
 
@@ -71,7 +68,17 @@ int funcion_hash(char *clave, size_t capacidad)
 		hash = ((hash << 5) + hash) + (unsigned long)c;
 	}
 
-	return (int)(hash % capacidad);
+	return hash;
+}
+
+int funcion_hash(char *clave, size_t capacidad_tabla)
+{
+	if (clave == NULL || capacidad_tabla == 0)
+		return ERROR;
+
+	unsigned long clave_hasheada = hash_djb2(clave);
+
+    return (int)(clave_hasheada % capacidad_tabla);
 }
 
 /*
