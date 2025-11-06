@@ -34,21 +34,15 @@ hash_t *hash_crear(size_t capacidad_inicial)
 	if (hash == NULL)
 		return NULL;
 
-	if (capacidad_inicial < CAPACIDAD_MINIMA) {
-		hash->tabla = calloc(CAPACIDAD_MINIMA, sizeof(nodo_t *));
-		if (hash->tabla == NULL) {
-			free(hash);
-			return NULL;
-		}
-		hash->capacidad = CAPACIDAD_MINIMA;
-	} else {
-		hash->tabla = calloc(capacidad_inicial, sizeof(nodo_t *));
-		if (hash->tabla == NULL) {
-			free(hash);
-			return NULL;
-		}
-		hash->capacidad = capacidad_inicial;
+	if (capacidad_inicial < CAPACIDAD_MINIMA)
+		capacidad_inicial = CAPACIDAD_MINIMA;
+
+	hash->tabla = calloc(capacidad_inicial, sizeof(nodo_t *));
+	if (hash->tabla == NULL) {
+		free(hash);
+		return NULL;
 	}
+	hash->capacidad = capacidad_inicial;
 
 	return hash;
 }
